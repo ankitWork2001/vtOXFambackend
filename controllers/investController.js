@@ -1,5 +1,6 @@
 import InvestmentPlan from "../models/investmentPlanModel.js";
 import UserInvestment from "../models/userInvestmentModel.js";
+import Wallet from "../models/walletModel.js";
 export const getInvestmentPlans = async (req, res) => {
   try {
     const plans=await InvestmentPlan.find();
@@ -15,17 +16,26 @@ export const getInvestmentPlans = async (req, res) => {
 export const subscribeInvestment = async (req, res) => {
   try {
     const { id } = req.params;
+    const userId = req.userId;
     const { amount,startDate,endDate,status,lastPayoutDate } = req.body;
-
+    const userWallet = await Wallet.findOne({ userId });
+    if (!userWallet) {
+      return res.status(404).json({ success: false, message: "User wallet not found" });
+    }
     // Find the investment plan by ID
     const plan = await InvestmentPlan.findById(id);
-    if (!plan) {
-      return res.status(404).json({ success: false, message: "Investment plan not found" });
+    if (!plan || plan.minAmount > amount || userWallet.balance < amount) {
+      return res.status(404).json({ success: false, message: "Investment plan not found or minimum amount not met or insufficient balance" });
     }
 
+    // Deduct the investment amount from the user's wallet
+    userWallet.balance -= amount;
+    await userWallet.save();
+    // Update the user's wallet balance
+    
     // Create a new user investment
     const userInvestment = await UserInvestment.create({
-      userId: req.userId,
+      userId,
       planId: id,
       amount,
       startDate,
@@ -34,7 +44,7 @@ export const subscribeInvestment = async (req, res) => {
       lastPayoutDate : lastPayoutDate || null
     });
 
-    res.status(201).json({ success: true, message: "Subscribed successfully", investment: userInvestment });
+    res.status(201).json({ success: true, message: "Subscribed successfully", investment: userInvestment , userWallet});
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }

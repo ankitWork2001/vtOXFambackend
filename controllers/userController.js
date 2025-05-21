@@ -28,8 +28,50 @@ export const getEmployeeById = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   try {
-    // Implementation
-    res.status(200).json({ success: true, message: "User updated successfully" });
+    const userId = req.userId;
+    const updateData = {};
+    
+    // Only include fields that were actually provided in the request
+    if (req.body.name) updateData.name = req.body.name;
+    if (req.body.email) updateData.email = req.body.email;
+    if (req.body.mobile) updateData.mobile = req.body.mobile;
+    
+    // Role and status should only be updatable by admin users
+    if (req.userRole === "admin") {
+      if (req.body.role) updateData.role = req.body.role;
+      if (req.body.status) updateData.status = req.body.status;
+    }
+    
+    // Don't run update if no fields were provided
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "No valid update fields provided" 
+      });
+    }
+    
+    // Use findByIdAndUpdate with options to return the updated document
+    const updatedUser = await User.findByIdAndUpdate(
+      userId, 
+      updateData,
+      { new: true, runValidators: true } // Return updated user and run schema validators
+    );
+    
+    if (!updatedUser) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "User not found" 
+      });
+    }
+    
+    // Don't send password back to client
+    const { password, ...userDetails } = updatedUser._doc;
+    
+    res.status(200).json({ 
+      success: true, 
+      message: "User updated successfully",
+      user: userDetails
+    });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
