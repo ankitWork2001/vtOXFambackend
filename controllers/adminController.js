@@ -89,7 +89,7 @@ export const toggleUserStatus = async (req, res) => {
 export const getAllTransactions = async (req, res) => {
   try {
     const transactions = await Transaction.find()
-    .populate("userId", "name email role status")
+    .populate("userId", "name username email role status")
     .exec();
 
     res.status(200).json({ success: true, transactions });
@@ -113,7 +113,7 @@ export const updateInvestmentPlan = async (req, res) => {
 export const getSpinLogs = async (req, res) => {
   try {
     const spins = await Spin.find()
-    .populate("userId", "name email role status")
+    .populate("userId", "name username email role status")
     .exec();
     if (!spins || spins.length === 0) {
       return res.status(404).json({ success: false, message: "No spins found" });

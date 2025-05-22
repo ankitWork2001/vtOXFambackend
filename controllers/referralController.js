@@ -84,7 +84,7 @@ export const getReferralTree = async (req, res) => {
   try {
     const userId=req.userId;
     const referralTree=await Referral.find({referrerId:userId})
-    .populate("referredId","name email mobile role")
+    .populate("referredId","name username email mobile role")
     .exec();
     if(!referralTree || referralTree.length===0){
       res.status(200).json({ success: true, message: "Not Referred Yet" });
