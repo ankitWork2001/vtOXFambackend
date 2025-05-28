@@ -50,6 +50,23 @@ export const subscribeInvestment = async (req, res) => {
   }
 };
 
+export const getSubscriptionsbyId = async (req,res) => {
+  try {
+    const id = req.params.id;
+    const user =await UserInvestment.findById(id)
+    .populate("userId", "name email role status")
+    .populate("planId", "name roiPercent minAmount durationDays autoPayout").exec();
+    const plan = await InvestmentPlan.findById(user.planId);
+    const userWallet = await Wallet.findOne({ userId : user.userId });
+    if(!user){ 
+      return res.status(404).json({ success: false, message: "Investment plans not found" });
+    }
+    res.status(201).json({ success: true, message: "User retrived successfully", userDetails: user, userWallet});
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
 export const getActiveInvestments = async (req, res) => {
   try {
     const userId= req.userId;

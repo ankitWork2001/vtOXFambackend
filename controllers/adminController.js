@@ -86,13 +86,24 @@ export const toggleUserStatus = async (req, res) => {
 };
 
 // View all wallet transactions
-export const getAllTransactions = async (req, res) => {
+export const getAllDeposits = async (req, res) => {
   try {
-    const transactions = await Transaction.find()
+    const transactions = await Transaction.find({type:"deposit"})
     .populate("userId", "name username email role status")
     .exec();
 
     res.status(200).json({ success: true, transactions });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// View All withdrawals
+export const getAllWithdrawals = async (req,res) => {
+  try {
+    const transactions = await Transaction.find({type:"withdrawal"})
+    .populate("userId", "name username email role status")
+    .exec();
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
