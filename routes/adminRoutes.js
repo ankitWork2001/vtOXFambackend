@@ -5,12 +5,12 @@ import { createInvestmentPlan, getAllDeposits, getAllUsers, getDashboardStats, t
 
 const router = Router();
 
-router.post('/investment/plan',authenticate,checkAdmin,createInvestmentPlan);
+router.get('/dashboard', authenticate, checkAdmin, getDashboardStats);
 
+router.post('/investment/plan',authenticate,checkAdmin,createInvestmentPlan);
 
 router.get('/users', authenticate, checkAdmin, getAllUsers);
 
-router.get('/dashboard', authenticate, checkAdmin, getDashboardStats);
 
 router.post('/user/:id/ban', authenticate, checkAdmin,toggleUserStatus );
 
@@ -23,3 +23,4 @@ router.get('/wallet/withdrawals',authenticate,checkAdmin,getAllWithdrawals)
 router.get('/referrals', authenticate, checkAdmin,getReferralStats );
 
 export default router;
+

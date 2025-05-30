@@ -35,7 +35,8 @@ const userSchema = new Schema({
         default:"active"
     },
     avatarUrl:{
-        type:String
+        type:String,
+        default: '',
     },
     spinCount:{
         type:Number,

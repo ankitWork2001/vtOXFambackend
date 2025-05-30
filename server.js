@@ -10,6 +10,7 @@ import walletRoutes from './routes/walletRoutes.js';
 import investRoutes from './routes/investRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 app.use(cors());
@@ -24,8 +25,9 @@ connectDB().then(() => {
 });
 
 app.get('/', (req, res) => {
-    res.send('Hello World !');
+    res.send('Hello World from backend!');
 });
+
 
 app.use('/api/auth', authRoutes);
 app.use('/api/profile', userRoutes);

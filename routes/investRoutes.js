@@ -8,3 +8,4 @@ router.get("/subscription/:id",authenticate,getSubscriptionsbyId);
 router.get("/active", authenticate,getActiveInvestments);
 router.get("/history", authenticate,getInvestmentHistory);
 export default router;
+

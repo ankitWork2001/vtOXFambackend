@@ -80,7 +80,29 @@ export const updateUser = async (req, res) => {
 export const uploadAvatar = async (req, res) => {
   try {
     // Implementation
-    res.status(200).json({ success: true, message: "Avatar uploaded successfully" });
+    const userId = req.userId;
+    const { avatarUrl } = req.body;
+
+    if (!userId || !avatarUrl) {
+      return res.status(400).json({ success: false, message: "userId and avatarUrl are required" });
+    }
+    // Find the user by ID and update the avatarUrl
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { avatarUrl },
+      { new: true, runValidators: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Avatar uploaded successfully",
+      user: user,
+    });
+
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
