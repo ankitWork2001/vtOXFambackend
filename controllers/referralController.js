@@ -62,17 +62,17 @@ export const giveReferral = async (req, res) => {
     }
     }
 
-    // const referrerLvl3 = await Referral.findOne({
-    //   referredId: referrerLvl2.referrerId,
-    //   level: 1,
-    // });
-    // if(referrerLvl3) {
-    //   await Referral.create({
-    //     referrerId: referrerLvl3.referrerId,
-    //     referredId: userId,
-    //     level: 3, // Assuming level 3 for indirect referral
-    //   });
-    // }
+    const referrerLvl3 = await Referral.findOne({
+      referredId: referrerLvl2.referrerId,
+      level: 1,
+    });
+    if(referrerLvl3) {
+      await Referral.create({
+        referrerId: referrerLvl3.referrerId,
+        referredId: userId,
+        level: 3, // Assuming level 3 for indirect referral
+      });
+    }
 
     res.status(200).json({ success: true, message: "Referral given successfully" });
   } catch (error) {
