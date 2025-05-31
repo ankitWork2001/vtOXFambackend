@@ -4,6 +4,7 @@ import Wallet from "../models/walletModel.js";
 import Referral from "../models/referralModel.js";
 import Transaction from "../models/transactionModel.js";
 import Spin from "../models/spinModel.js";
+import UserInvestment from "../models/userInvestmentModel.js";
 
 export const createInvestmentPlan = async (req, res) => {
     try {
@@ -33,11 +34,26 @@ export const createInvestmentPlan = async (req, res) => {
 export const getAllInvestmentPlans = async (req, res) => {
   try {
     const plans = await InvestmentPlan.find().sort({ createdAt: -1 }); // Sort by latest first
+    if(!plans){
+      return res.status(400).json({ success: false, message: "Investment plan not found" });
+    }
     res.status(200).json({ success: true, data: plans });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
 };
+
+export const getAllUserInvestments = async (req,res) => {
+  try {
+    const investments = await UserInvestment.find();
+    if(!investments){
+      return res.status(400).json({ success: false, message: " No user had Investment plan" });
+    }
+    res.status(200).json({ success: true, investments });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });   
+  }
+}
 
 export const getAllUsers = async (req, res) => {
   try {

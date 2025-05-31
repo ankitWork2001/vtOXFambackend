@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authenticate, checkAdmin } from "../middleware/authMiddleware.js";
-import { createInvestmentPlan, getAllDeposits, getAllUsers, getDashboardStats, toggleUserStatus,getSpinLogs, getReferralStats, getAllWithdrawals, updateInvestmentPlan, getAllInvestmentPlans, getUser } from "../controllers/adminController.js";
+import { createInvestmentPlan, getAllDeposits, getAllUsers, getDashboardStats, toggleUserStatus,getSpinLogs, getReferralStats, getAllWithdrawals, updateInvestmentPlan, getAllInvestmentPlans, getUser, getAllUserInvestments } from "../controllers/adminController.js";
 
 
 const router = Router();
@@ -10,6 +10,8 @@ router.get('/dashboard', authenticate, checkAdmin, getDashboardStats);
 router.post('/investment/plan',authenticate,checkAdmin,createInvestmentPlan);
 
 router.get('/investment/plans', authenticate, checkAdmin, getAllInvestmentPlans)
+
+router.get('/userinvestments',authenticate, checkAdmin, getAllUserInvestments);
 
 router.put('/investment/updateplan/:id',authenticate, checkAdmin, updateInvestmentPlan);
 
