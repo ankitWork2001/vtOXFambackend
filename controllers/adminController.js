@@ -45,7 +45,8 @@ export const getAllInvestmentPlans = async (req, res) => {
 
 export const getAllUserInvestments = async (req,res) => {
   try {
-    const investments = await UserInvestment.find();
+    const investments = await UserInvestment.find()
+                        .populate('planId', 'name roiPercent' );
     if(!investments){
       return res.status(400).json({ success: false, message: " No user had Investment plan" });
     }
