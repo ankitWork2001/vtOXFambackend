@@ -114,7 +114,35 @@ export const getAllWithdrawals = async (req,res) => {
 export const updateInvestmentPlan = async (req, res) => {
   try {
     const { id } = req.params;
-    // TODO: Implement logic to update investment plan
+    const {
+      name,
+      roiPercent,
+      minAmount,
+      durationDays,
+      autoPayout
+    } = req.body;
+
+    // Find the plan by ID
+    const plan = await InvestmentPlan.findById(id);
+    if (!plan) {
+      return res.status(404).json({ success: false, message: "Investment plan not found" });
+    }
+
+    // Update fields if provided
+    if (name !== undefined) plan.name = name;
+    if (roiPercent !== undefined) plan.roiPercent = roiPercent;
+    if (minAmount !== undefined) plan.minAmount = minAmount;
+    if (durationDays !== undefined) plan.durationDays = durationDays;
+    if (autoPayout !== undefined) plan.autoPayout = autoPayout;
+
+    // Save the plan
+    await plan.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Investment plan updated successfully",
+      data: plan
+    });
     res.status(200).json({ success: true, message: "Investment plan updated successfully" });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });

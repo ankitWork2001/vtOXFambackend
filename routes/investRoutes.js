@@ -9,3 +9,4 @@ router.get("/active", authenticate,getActiveInvestments);
 router.get("/history", authenticate,getInvestmentHistory);
 export default router;
 
+
