@@ -52,7 +52,8 @@ export const getUser = async (req,res) => {
   try {
     const {id} = req.params;
     const user = await User.findOne({ _id: id, role: "user" });
-    const wallet = await Wallet.findById(id);
+    const wallet = await Wallet.findOne({ userId: id });
+    res.send("from wallet");
     if (!user || !wallet) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
