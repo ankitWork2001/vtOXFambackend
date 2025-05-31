@@ -52,10 +52,11 @@ export const getUser = async (req,res) => {
   try {
     const {id} = req.params;
     const user = await User.findOne({ _id: id, role: "user" });
-    if (!user) {
+    const wallet = await Wallet.findById(id);
+    if (!user || !wallet) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
-    res.status(200).json({ success: true, user });
+    res.status(200).json({ success: true, user, wallet });
   } catch (error) {
       res.status(500).json({ success: false, error: error.message });
   }
