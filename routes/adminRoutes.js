@@ -9,7 +9,7 @@ router.get('/dashboard', authenticate, checkAdmin, getDashboardStats);
 
 router.post('/investment/plan',authenticate,checkAdmin,createInvestmentPlan);
 
-router.put('/investment/updateplan/:id',authenticate, checkAdmin, updateInvestmentPlan)
+router.put('/investment/updateplan/:id',authenticate, checkAdmin, updateInvestmentPlan);
 
 router.get('/users', authenticate, checkAdmin, getAllUsers);
 
