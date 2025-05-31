@@ -24,5 +24,8 @@ router.get('/wallet/withdrawals',authenticate,checkAdmin,getAllWithdrawals)
 
 router.get('/referrals', authenticate, checkAdmin,getReferralStats );
 
+
+
+
 export default router;
 
