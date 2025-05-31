@@ -51,7 +51,7 @@ export const getAllUsers = async (req, res) => {
 export const getUser = async (req,res) => {
   try {
     const {id} = req.params;
-    const user = await User.findOne({ _id: userId, role: "user" });
+    const user = await User.findOne({ _id: id, role: "user" });
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
