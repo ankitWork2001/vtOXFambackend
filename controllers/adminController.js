@@ -28,7 +28,16 @@ export const createInvestmentPlan = async (req, res) => {
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }
-}
+};
+
+export const getAllInvestmentPlans = async (req, res) => {
+  try {
+    const plans = await InvestmentPlan.find().sort({ createdAt: -1 }); // Sort by latest first
+    res.status(200).json({ success: true, data: plans });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
 
 export const getAllUsers = async (req, res) => {
   try {
