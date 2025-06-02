@@ -169,7 +169,7 @@ export const toggleDepositStatus = async (req,res) => {
 
     // Ensure it's a deposit and still pending
     if(trans.type !== 'deposit' || trans.status !== 'pending'){
-      return res.status(404).json({ success: false, message: "Transaction type is not deposit or the staus is not pending" });   
+      return res.status(404).json({ success: false, message: "Transaction type is not deposit or the status is not pending" });   
     }
 
     trans.status = status;
@@ -199,7 +199,7 @@ export const toggleWithdrawalStatus = async (req,res) => {
 
     // Ensure it's a withdrawal and still pending
     if(trans.type !== 'withdrawal' || trans.status !== 'pending'){
-      return res.status(404).json({ success: false, message: "Transaction type is not deposit or the staus is not pending" });   
+      return res.status(404).json({ success: false, message: "Transaction type is not withdrawal or the status is not pending" });   
     }
 
     trans.status = status;
