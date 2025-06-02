@@ -213,6 +213,26 @@ export const toggleWithdrawalStatus = async (req,res) => {
   } catch (error) {
     res.status(500).json({ success: false, error: error.message }); 
   }
+};
+
+//View All Transactions and reports
+export const getAllTransactionReports = async (req,res) => {
+  try {
+    const transactions = await Transaction.find().sort({
+      createdAt: -1
+    });
+    if(!transactions){
+      return res.status(404).json({ success: false, message: "Transactions not there yet" });   
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Transactions fetched",
+      transactions,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });     
+  }
 }
 
 // update investment plan
