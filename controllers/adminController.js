@@ -190,6 +190,7 @@ export const toggleDepositStatus = async (req,res) => {
   }
 };
 
+// Approve all withdrawals
 export const approvewithdrawals = async (req,res) => {
   try {
     const transactions = await Transaction.find({ type: 'withdrawal', status: 'pending' });
@@ -203,6 +204,12 @@ export const approvewithdrawals = async (req,res) => {
         await t.save();
       })
     );
+
+    res.status(200).json({
+      success: true,
+      message: "Transactions approved",
+      transactions,
+    });
 
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });       
