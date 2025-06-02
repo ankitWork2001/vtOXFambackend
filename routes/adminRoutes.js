@@ -21,7 +21,7 @@ router.get('/user/:id',authenticate, checkAdmin, getUser);
 
 router.post('/user/:id/ban', authenticate, checkAdmin,toggleUserStatus );
 
-router.put('/depositstatus/:id', authenticate, checkAdmin, toggleDepositStatus)
+router.put('/depositstatus/:id', authenticate, checkAdmin, toggleDepositStatus);
 
 router.get('/wallet/deposits', authenticate, checkAdmin,getAllDeposits);
 
