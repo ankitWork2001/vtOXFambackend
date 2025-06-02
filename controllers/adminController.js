@@ -155,18 +155,25 @@ export const toggleDepositStatus = async (req,res) => {
   try {
     const {id} = req.params;
     const {status} = req.body;
-    const trans = await Transaction.findByIdAndUpdate(id,
-      {status},
-      { new: true } // returns the updated document
-    );
+    const trans = await Transaction.findById(id);
     if(!trans){
       return res.status(404).json({ success: false, message: "Transaction not found" });   
     }
+
+    // Ensure it's a deposit and still pending
+    if(trans.type !== 'deposit' || trans.status !== 'pending'){
+      return res.status(404).json({ success: false, message: "Transaction type is not deposit or the staus is not pending" });   
+    }
+
+    trans.status = status;
+    await trans.save();
+
     res.status(200).json({
       success: true,
       message: "Transaction status updated successfully",
       transaction: trans,
     });
+    
   } catch (error) {
      res.status(500).json({ success: false, error: error.message });   
   }
