@@ -126,13 +126,15 @@ export const toggleUserStatus = async (req, res) => {
   }
 };
 
-// View all wallet transactions
+// View all Deposits;
 export const getAllDeposits = async (req, res) => {
   try {
     const transactions = await Transaction.find({type:"deposit"})
     .populate("userId", "name username email role status")
     .exec();
-
+    if(!transactions){
+      return res.status(404).json({ success: false, message: "Transaction not found" });   
+    }
     res.status(200).json({ success: true, transactions });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -145,6 +147,10 @@ export const getAllWithdrawals = async (req,res) => {
     const transactions = await Transaction.find({type:"withdrawal"})
     .populate("userId", "name username email role status")
     .exec();
+    if(!transactions){
+      return res.status(404).json({ success: false, message: "Transaction not found" });   
+    }
+    res.status(200).json({ success: true, transactions });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
@@ -156,6 +162,7 @@ export const toggleDepositStatus = async (req,res) => {
     const {id} = req.params;
     const {status} = req.body;
     const trans = await Transaction.findById(id);
+
     if(!trans){
       return res.status(404).json({ success: false, message: "Transaction not found" });   
     }
@@ -170,15 +177,43 @@ export const toggleDepositStatus = async (req,res) => {
 
     res.status(200).json({
       success: true,
-      message: "Transaction status updated successfully",
+      message: "Deposit status updated successfully",
       transaction: trans,
     });
-    
+
   } catch (error) {
      res.status(500).json({ success: false, error: error.message });   
   }
 };
 
+//Toggle Withdrawals status to Completed or Failed
+export const toggleWithdrawalStatus = async (req,res) => {
+  try {
+    const {id} = req.params;
+    const {status} = req.body;
+    const trans = await Transaction.findById(id);
+
+    if(!trans){
+      return res.status(404).json({ success: false, message: "Transaction not found" });   
+    }
+
+    // Ensure it's a withdrawal and still pending
+    if(trans.type !== 'withdrawal' || trans.status !== 'pending'){
+      return res.status(404).json({ success: false, message: "Transaction type is not deposit or the staus is not pending" });   
+    }
+
+    trans.status = status;
+    await trans.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Withdrawal status updated successfully",
+      transaction: trans,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message }); 
+  }
+}
 
 // update investment plan
 export const updateInvestmentPlan = async (req, res) => {
