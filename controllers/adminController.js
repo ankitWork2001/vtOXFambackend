@@ -194,7 +194,7 @@ export const toggleDepositStatus = async (req,res) => {
 export const approvewithdrawals = async (req,res) => {
   try {
     const transactions = await Transaction.find({ type: 'withdrawal', status: 'pending' });
-    if(!transactions){
+    if(!transactions || transactions.length === 0){
       return res.status(404).json({ success: false, message: "Transactions not found " });   
     }
     
