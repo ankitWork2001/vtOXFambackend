@@ -150,7 +150,30 @@ export const getAllWithdrawals = async (req,res) => {
   }
 };
 
-// Create/update investment plan
+// Toggle Deposit status to Completed or Failed
+export const toggleDepositStatus = async (req,res) => {
+  try {
+    const {id} = req.params;
+    const {status} = req.body;
+    const trans = await Transaction.findByIdAndUpdate(id,
+      {status},
+      { new: true } // returns the updated document
+    );
+    if(!trans){
+      return res.status(404).json({ success: false, message: "Transaction not found" });   
+    }
+    res.status(200).json({
+      success: true,
+      message: "Transaction status updated successfully",
+      transaction: trans,
+    });
+  } catch (error) {
+     res.status(500).json({ success: false, error: error.message });   
+  }
+};
+
+
+// update investment plan
 export const updateInvestmentPlan = async (req, res) => {
   try {
     const { id } = req.params;
