@@ -44,7 +44,7 @@ export const depositFunds = async (req, res) => {
       userId,
       type: "deposit",
       amount,
-      status: "completed"
+      status: "pending"
     });
 
     const referral = await Referral.findOne({ referredId: userId, level: 1 });
@@ -98,7 +98,7 @@ export const withdrawFunds = async (req, res) => {
       userId,
       type: "withdrawal",
       amount,
-      status: "completed"
+      status: "pending"
     });
     res.status(200).json({ success: true, message: "Withdrawal successful", wallet });
   } catch (error) {

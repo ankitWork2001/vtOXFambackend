@@ -23,9 +23,9 @@ router.post('/user/:id/ban', authenticate, checkAdmin,toggleUserStatus );
 
 router.get('/wallet/deposits', authenticate, checkAdmin,getAllDeposits);
 
-router.get('/spins/logs', authenticate, checkAdmin, getSpinLogs);
-
 router.get('/wallet/withdrawals',authenticate,checkAdmin,getAllWithdrawals)
+
+router.get('/spins/logs', authenticate, checkAdmin, getSpinLogs);
 
 router.get('/referrals', authenticate, checkAdmin,getReferralStats );
 

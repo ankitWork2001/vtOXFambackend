@@ -150,7 +150,7 @@ export const getAllWithdrawals = async (req,res) => {
   }
 };
 
-// Create/update investment plan (you already have createInvestmentPlan)
+// Create/update investment plan
 export const updateInvestmentPlan = async (req, res) => {
   try {
     const { id } = req.params;
@@ -175,7 +175,6 @@ export const updateInvestmentPlan = async (req, res) => {
     if (durationDays !== undefined) plan.durationDays = durationDays;
     if (autoPayout !== undefined) plan.autoPayout = autoPayout;
 
-    // Save the plan
     await plan.save();
 
     res.status(200).json({
