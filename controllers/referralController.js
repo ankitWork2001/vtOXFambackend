@@ -1,6 +1,7 @@
 import User from "../models/userModel.js";
 import Referral from "../models/referralModel.js";
 import Wallet from "../models/walletModel.js";
+import Spin from "../models/spinModel.js";
 
 export const getAllReferral = async (req,res) => {
   try {
@@ -45,13 +46,24 @@ export const giveReferral = async (req, res) => {
       return res.status(404).json({ success: false, message: "Referrer not found" });
     }
 
-    // Award Level 1 referral
+    // Create Level 1 referral
     await Referral.create({
       referrerId: referrer._id,
       referredId: userId,
       level: 1,
       commissionPercent: 10
     });
+
+    // Give both users one free spin
+    const freeSpin = {
+      resultValue: 0,
+      type: "free",
+    };
+
+    await Spin.create([
+      { ...freeSpin, userId: referrer._id },
+      { ...freeSpin, userId }
+    ]);
 
     // Update 1 Free spin to referrer
     referrer.spinCount = (referrer.spinCount || 0) + 1;
