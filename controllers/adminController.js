@@ -223,8 +223,8 @@ export const toggleWithdrawalStatus = async (req,res) => {
     const {status} = req.body;
     const trans = await Transaction.findById(id);
 
-    if(!trans){
-      return res.status(404).json({ success: false, message: "Transaction not found" });   
+    if(!trans || trans.amount <= 100){
+      return res.status(404).json({ success: false, message: "Transaction not found or Amount is less than 100" });   
     }
 
     // Ensure it's a withdrawal and still pending

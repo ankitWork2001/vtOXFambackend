@@ -1,6 +1,7 @@
 import Wallet from "../models/walletModel.js";
 import Transaction from "../models/transactionModel.js";
 import Referral from "../models/referralModel.js";
+import UserInvestment from "../models/userInvestmentModel.js";
 
 
 export const getWalletBalance = async (req, res) => {
@@ -83,13 +84,17 @@ export const depositFunds = async (req, res) => {
 export const withdrawFunds = async (req, res) => {
   try {
     const userId=req.userId
-    const {amount}=req.body
+    const {amount}=req.body;
+    const Plan = await UserInvestment.findOne({userId});
     const wallet = await Wallet.findOne({ userId });
     if (!wallet) {
       return res.status(404).json({ success: false, message: "Wallet not found" });
     }
-    if (wallet.balance < amount) {
-      return res.status(400).json({ success: false, message: "Insufficient balance" });
+    if(Plan.status === "active"){
+      return res.status(404).json({ success: false, message: "You can't withdraw until you plan is active" });   
+    }
+    if (wallet.balance < amount || amount <= 100) {
+      return res.status(400).json({ success: false, message: "Insufficient balance or Minimum withdrawal is > 100" });
     }
     wallet.balance -= amount;
     await wallet.save();
