@@ -2,6 +2,7 @@ import User from "../models/userModel.js";
 import Wallet from "../models/walletModel.js";
 import Spin from "../models/spinModel.js";
 import Transaction from "../models/transactionModel.js";
+import Referral from "../models/referralModel.js";
 
 export const purchaseSpin = async (req, res) => {
   try {
@@ -33,9 +34,9 @@ export const purchaseSpin = async (req, res) => {
 
 export const playSpin = async (req, res) => {
   try {
-    // Implementation
     const userId = req.userId;
     const { spinType } = req.body;
+    const Refer =  await Referral.findOne({referrerId:userId});
     const user = await User.findById(userId);
     if (!user || user.spinCount <= 0) {
       return res.status(400).json({ success: false, message: "No spins available" });

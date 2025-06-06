@@ -1,6 +1,20 @@
 import User from "../models/userModel.js";
 import Referral from "../models/referralModel.js";
 import Wallet from "../models/walletModel.js";
+
+export const getAllReferral = async (req,res) => {
+  try {
+    const referrals = await Referral.find({});
+    if(!referrals){
+      return res.status(404).json({ success: false, message: "Referrals not found" });    
+    }
+    res.status(200).json({ success: true, message: "Referral code fetched", referrals});
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message }); 
+  }
+}
+
+
 export const getReferralCode = async (req, res) => {
   try {
     const userId = req.userId;
