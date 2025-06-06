@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { authenticate } from "../middleware/authMiddleware.js";
-import { getReferralCode, getReferralCommissions, getReferralTree, giveReferral } from "../controllers/referralController.js";
+import { getAllReferral, getReferralCode, getReferralCommissions, getReferralTree, giveReferral } from "../controllers/referralController.js";
 const router = Router();
+router.get("/", authenticate, getAllReferral);
 router.get("/code", authenticate,getReferralCode);
 router.post("/refer", authenticate,giveReferral);
 router.get("/tree", authenticate,getReferralTree);
