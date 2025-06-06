@@ -16,6 +16,10 @@ const referralSchema = new Schema({
         min:1,
         max:3,
         required:true
+    },
+    commissionPercent:{
+        type: Number,
+        required: true
     }
 },{
     timestamps:true

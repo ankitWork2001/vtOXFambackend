@@ -33,66 +33,73 @@ export const giveReferral = async (req, res) => {
     const { referralCode } = req.body;
     const userId = req.userId;
 
-    // Find the user by referral code
+    // Check if the user has already been referred
+    const existingReferral = await Referral.findOne({ referredId: userId, level: 1 });
+    if (existingReferral) {
+      return res.status(400).json({ success: false, message: "Referral already used." });
+    }
+
+    // Find the level 1 referrer using referral code
     const referrer = await User.findOne({ code: referralCode });
     if (!referrer) {
       return res.status(404).json({ success: false, message: "Referrer not found" });
     }
 
+    // Award Level 1 referral
     await Referral.create({
       referrerId: referrer._id,
       referredId: userId,
-      level: 1, // Assuming level 1 for direct referral
+      level: 1,
+      commissionPercent: 10
     });
-    referrer.spinCount+=1
+
+    // Update 1 Free spin to referrer
+    referrer.spinCount = (referrer.spinCount || 0) + 1;
     await referrer.save();
-    
+    // Give 1 free spin to the referred
+    const referredUser = await User.findById(userId);
+    if (referredUser) {
+      referredUser.spinCount = (referredUser.spinCount || 0) + 1;
+      await referredUser.save();
+    }
 
-    const referrerLvl2 = await Referral.findOne({
+    // Level 2: Get the referrer of level 1 referrer
+    const level2Referral = await Referral.findOne({
       referredId: referrer._id,
-      level: 1,
+      level: 1
     });
-    console.log("refer lvl 2", referrerLvl2);
-    
 
-    if(referrerLvl2) {
-      console.log("lvlv 2");
-      
+    if (level2Referral) {
       await Referral.create({
-        referrerId: referrerLvl2.referrerId,
+        referrerId: level2Referral.referrerId,
         referredId: userId,
-        level: 2, // Assuming level 2 for indirect referral
+        level: 2,
+        commissionPercent: 5
       });
-      const referrerLvl3 = await Referral.findOne({
-      referredId: referrerLvl2.referrerId,
-      level: 1,
-    });
-    if(referrerLvl3) {
-      await Referral.create({
-        referrerId: referrerLvl3.referrerId,
-        referredId: userId,
-        level: 3, // Assuming level 3 for indirect referral
-      });
-    }
-    }
 
-    const referrerLvl3 = await Referral.findOne({
-      referredId: referrerLvl2.referrerId,
-      level: 1,
-    });
-    if(referrerLvl3) {
-      await Referral.create({
-        referrerId: referrerLvl3.referrerId,
-        referredId: userId,
-        level: 3, // Assuming level 3 for indirect referral
+      // Level 3: Get the referrer of level 2 referrer
+      const level3Referral = await Referral.findOne({
+        referredId: level2Referral.referrerId,
+        level: 1
       });
+
+      if (level3Referral) {
+        await Referral.create({
+          referrerId: level3Referral.referrerId,
+          referredId: userId,
+          level: 3,
+          commissionPercent: 2.5
+        });
+      }
     }
 
-    res.status(200).json({ success: true, message: "Referral given successfully" });
+    res.status(200).json({ success: true, message: "Referral successfully recorded." });
   } catch (error) {
+    console.error("Referral Error:", error);
     res.status(500).json({ success: false, error: error.message });
   }
 };
+
 
 export const getReferralTree = async (req, res) => {
   try {
