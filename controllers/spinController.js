@@ -36,40 +36,64 @@ export const playSpin = async (req, res) => {
   try {
     const userId = req.userId;
     const { spinType } = req.body;
-    const Refer =  await Referral.findOne({referrerId:userId});
+
     const user = await User.findById(userId);
     if (!user || user.spinCount <= 0) {
       return res.status(400).json({ success: false, message: "No spins available" });
     }
+
     const spinValue = Math.floor(Math.random() * 100) + 1;
+
     const spin = await Spin.create({
       userId,
       resultValue: spinValue,
       type: spinType || "free",
     });
+
     user.spinCount -= 1;
     await user.save();
-    // Update wallet based on spin result
+
     const userWallet = await Wallet.findOne({ userId });
     if (!userWallet) {
       return res.status(404).json({ success: false, message: "User wallet not found" });
     }
 
+    // Count how many spins this user has ever played
+    const totalSpins = await Spin.countDocuments({ userId });
+
+    // Bonus Logic
+    let spinBonus = 0;
+    if (totalSpins === 1 || totalSpins % 3 === 0) {
+      spinBonus = 1;
+      userWallet.bonus = (userWallet.bonus || 0) + spinBonus;
+    }
+
+    // Record main spin amount as transaction
     await Transaction.create({
       userId,
       type: "bonus",
       amount: spinValue,
-      status: "completed",
     });
 
-    userWallet.balance += spinValue; 
+    userWallet.balance += spinValue;
+    userWallet.bonus+=1;
     await userWallet.save();
+
     const { password, ...userData } = user._doc;
-    res.status(200).json({ success: true, message: "Spin played successfully", spin, userData, userWallet });
+
+    res.status(200).json({
+      success: true,
+      message: `Spin played successfully${spinBonus ? " + ₹1 bonus" : ""}`,
+      spin,
+      userData,
+      userWallet
+    });
   } catch (error) {
+    console.error("Spin Error:", error);
     res.status(500).json({ success: false, error: error.message });
   }
 };
+
 
 export const getSpinLogs = async (req, res) => {
   try {

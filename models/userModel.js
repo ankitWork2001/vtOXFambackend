@@ -43,9 +43,15 @@ const userSchema = new Schema({
         default:1
     },
     code:{
-        type:String,
-        default:null
+        type: String,
+        unique: true, // This is the referral code
+        required: true
     },
+    referredBy:{
+        type: mongoose.Schema.Types.ObjectId, // Adding the referred User
+        ref: "User",
+        default: null
+    }
 },{
     timestamps:true
 });

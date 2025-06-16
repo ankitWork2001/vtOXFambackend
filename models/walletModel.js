@@ -10,6 +10,10 @@ const walletSchema = new Schema({
         type:Number,
         default:0
     },
+    bonus:{
+        type:Number,
+        default:0
+    },
     lockedBalance:{
         type:Number,
         default:0

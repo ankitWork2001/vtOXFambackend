@@ -3,6 +3,22 @@ import Referral from "../models/referralModel.js";
 import Wallet from "../models/walletModel.js";
 import Spin from "../models/spinModel.js";
 
+const getBonusByLevel = (level) => { // to get bonus amount
+  switch (level) {
+    case 1: return 1000;
+    case 2: return 500;
+    case 3: return 250;
+    default: return 0;
+  }
+};
+
+const creditWallet = async (userId, amount) => { // Add bonus in wallet
+  await Wallet.updateOne(
+    { userId },
+    { balance: amount } ,
+  );
+};
+
 export const getAllReferral = async (req,res) => {
   try {
     const referrals = await Referral.find({});
@@ -48,11 +64,13 @@ export const giveReferral = async (req, res) => {
 
     // Create Level 1 referral
     await Referral.create({
-      referrerId: referrer._id,
+     referrerId: referrer._id,
       referredId: userId,
       level: 1,
       commissionPercent: 10
     });
+    await creditWallet(referrer._id, getBonusByLevel(1));
+
 
     // Give both users one free spin
     const freeSpin = {
@@ -82,12 +100,14 @@ export const giveReferral = async (req, res) => {
     });
 
     if (level2Referral) {
-      await Referral.create({
+       await Referral.create({
         referrerId: level2Referral.referrerId,
         referredId: userId,
         level: 2,
         commissionPercent: 5
       });
+      await creditWallet(level2Referral.referrerId, getBonusByLevel(2));
+
 
       // Level 3: Get the referrer of level 2 referrer
       const level3Referral = await Referral.findOne({
@@ -102,6 +122,7 @@ export const giveReferral = async (req, res) => {
           level: 3,
           commissionPercent: 2.5
         });
+        await creditWallet(level3Referral.referrerId, getBonusByLevel(3));
       }
     }
 
