@@ -15,7 +15,7 @@ const getBonusByLevel = (level) => { // to get bonus amount
 const creditWallet = async (userId, amount) => { // Add bonus in wallet
   await Wallet.updateOne(
     { userId },
-    { balance: amount } ,
+    { $inc: { balance: amount } },
   );
 };
 

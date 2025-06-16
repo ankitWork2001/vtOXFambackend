@@ -9,6 +9,8 @@ import referralRoutes from './routes/referralRoutes.js';
 import walletRoutes from './routes/walletRoutes.js';
 import investRoutes from './routes/investRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import { distributeDailyInvestmentBonus } from './controllers/investController.js';
+import cron from "node-cron";
 
 
 const app = express();
@@ -28,6 +30,15 @@ app.get('/', (req, res) => {
     res.send('Hello World from backend!');
 });
 
+//Daily Update using cron
+cron.schedule("0 0 * * *", async () => {
+ try {
+  await distributeDailyInvestmentBonus();
+  console.log("Daily bonus distributed successfully");
+} catch (err) {
+  console.error("Error in daily bonus distribution:", err.message);
+}
+});
 
 app.use('/api/auth', authRoutes);
 app.use('/api/profile', userRoutes);

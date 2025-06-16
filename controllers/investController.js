@@ -13,6 +13,63 @@ export const getInvestmentPlans = async (req, res) => {
   }
 };
 
+export const distributeDailyInvestmentBonus = async () => {
+  try {
+    const now = new Date();
+
+    //Fetch all active investments and populate the linked investment plan
+    const activeInvestments = await UserInvestment.find({ status: "active" })
+      .populate("planId");
+
+    for (const investment of activeInvestments) {
+      const {
+        _id,
+        userId,
+        amount,
+        planId,
+        endDate,
+        lastPayoutDate,
+      } = investment;
+
+      // Skip if investment is expired
+      if (new Date(endDate) < now) continue;
+
+      // Prevent multiple payouts on the same day
+      const lastPaid = lastPayoutDate ? new Date(lastPayoutDate.toDateString()) : null;
+      const today = new Date(now.toDateString());
+      if (lastPaid && lastPaid.getTime() === today.getTime()) continue;
+
+      // Get ROI from investment plan
+      const roi = planId?.roiPercent;
+      if (!roi) {
+        console.warn(`Missing ROI for plan in investment ${_id}`);
+        continue;
+      }
+
+      const bonusAmount = parseFloat((amount * (roi / 100)).toFixed(2));
+
+      // Find user's wallet
+      const userWallet = await Wallet.findOne({ userId });
+      if (!userWallet) {
+        console.warn(`Wallet not found for user ${userId}`);
+        continue;
+      }
+
+      //Update wallet bonus and balance
+      userWallet.bonus += bonusAmount;
+      await userWallet.save();
+
+      investment.lastPayoutDate = now;
+      await investment.save();
+    }
+
+    console.log("Daily investment bonuses distributed based on plan ROI.");
+  } catch (error) {
+    console.error("Error distributing daily ROI:", error.message);
+  }
+};
+
+
 export const subscribeInvestment = async (req, res) => {
   try {
     const { id } = req.params;

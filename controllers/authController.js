@@ -16,12 +16,9 @@ const getBonusByLevel = (level) => { // to get bonus amount
 const creditWallet = async (userId, amount) => { // Add bonus in wallet
   await Wallet.updateOne(
     { userId },
-    { balance: amount } ,
+    { $inc: { bonus: amount } },
   );
 };
-
-
-
 
 // Check for circular referral: prevent if new user would be added to their own downline
 const isCircularReferral = async (referrerId, newUserId) => {
@@ -40,7 +37,6 @@ const isCircularReferral = async (referrerId, newUserId) => {
 
   return false;
 };
-
 
 export const signup = async (req, res) => {
   try {
